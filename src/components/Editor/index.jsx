@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 
 import styles from './editor.module.css';
 import { ResizableBox } from "react-resizable";
+import { Box } from "@chakra-ui/react";
 
 // add react resizable
 const Editor = ({
@@ -12,6 +13,9 @@ const Editor = ({
 	value
 }) => {
 	return (
+		<Box
+			height={'100vh'}
+		>
 			<AceEditor
 				mode="javascript"
 				theme="monokai"
@@ -28,6 +32,8 @@ const Editor = ({
 					tabSize: 2,
 				}}
 			/>
+		</Box>
+
 	);
 };
 
