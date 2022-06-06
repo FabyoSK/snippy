@@ -1,6 +1,5 @@
 import Editor from "../../components/Editor"
 import SnippetList from "../../components/SnippetList"
-import styles from './home.module.css';
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import SearchInput from "../../components/SearchInput";
@@ -13,6 +12,7 @@ function App() {
   const [snippet, setSnippet] = useState({});
   const [unSavedSnippet, setUnSavedSnippet] = useState({});
   const [shouldUpdate, setShouldUpdate] = useState(false);
+
   const handleChangeSnippetContent = (text) => {
     setUnSavedSnippet({ ...unSavedSnippet, body: text });
   };
@@ -36,8 +36,7 @@ function App() {
     setShouldUpdate(true);
     setSnippet(unSavedSnippet)
     console.log("unSavedSnippet")
-  }, 1000);
-
+  }, 3000);
 
   useEffect(() => {
     invoke('get_snippets')
@@ -45,7 +44,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    console.log("bjhbjb")
     if (shouldUpdate) {
       invoke('update_snippet', {
         id: snippet.id,
@@ -70,10 +68,7 @@ function App() {
 
   useEffect(() => {
     syncSnippet();
-    console.log("fsk", unSavedSnippet)
   }, [unSavedSnippet])
-
-  console.log(snippets)
 
   return (
     <Flex
