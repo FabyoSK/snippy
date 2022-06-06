@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 
 function App() {
   const [snippets, setSnippets] = useState([]);
@@ -13,8 +13,9 @@ function App() {
   const [unSavedSnippet, setUnSavedSnippet] = useState({});
   const [shouldUpdate, setShouldUpdate] = useState(false);
 
-  const handleChangeSnippetContent = (text) => {
-    setUnSavedSnippet({ ...unSavedSnippet, body: text });
+
+  const handleChangeSnippet = (key, value) => {
+    setUnSavedSnippet({ ...unSavedSnippet, [key]: value });
   };
 
   const handleSetupNewSnippet = () => {
@@ -24,7 +25,10 @@ function App() {
     })
       .then(data => {
         setSnippets([...snippets, data]);
-        setUnSavedSnippet(data);
+        setUnSavedSnippet({
+          title: 'New Snippet',
+          body: '// Type your code here',
+        });
       });
   };
 
@@ -35,7 +39,6 @@ function App() {
   const syncSnippet = _.throttle(() => {
     setShouldUpdate(true);
     setSnippet(unSavedSnippet)
-    console.log("unSavedSnippet")
   }, 3000);
 
   useEffect(() => {
@@ -50,19 +53,19 @@ function App() {
         updatedTitle: snippet.title,
         updatedBody: snippet.body
       })
-      .then(
-      () => {
-        setShouldUpdate(false);
-      //   setSnippets(
-      //     snippets.map(
-      //       s => {
-      //         if (s.id === snippet.id) {
-      //           return snippet;
-      //         }
-      //         return s;
-      //       })
-        // )
-      });
+        .then(
+          () => {
+            setShouldUpdate(false);
+              setSnippets(
+                snippets.map(
+                  s => {
+                    if (s.id === snippet.id) {
+                      return snippet;
+                    }
+                    return s;
+                  })
+            )
+          });
     }
   }, [snippet])
 
@@ -91,10 +94,13 @@ function App() {
           onSnippetClick={handleSetSnippetFocus}
         />
       </Box>
-      <Editor
-        onChange={handleChangeSnippetContent}
-        value={unSavedSnippet?.body}
-      />
+      <Box>
+        <Editor
+          onChange={handleChangeSnippet}
+          title={unSavedSnippet?.title}
+          value={unSavedSnippet?.body}
+        />
+      </Box>
     </Flex>
   )
 }
