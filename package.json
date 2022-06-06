@@ -9,8 +9,13 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.1",
+    "@chakra-ui/react": "^2.1.2",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
     "@tauri-apps/api": "^1.0.0-rc.6",
     "ace-builds": "^1.5.3",
+    "framer-motion": "^6",
     "lodash": "^4.17.21",
     "monaco-editor": "^0.33.0",
     "react": "^18.0.0",

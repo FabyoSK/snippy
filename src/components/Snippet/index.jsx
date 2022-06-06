@@ -1,3 +1,4 @@
+import { Box, Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 
 const Snippet = ({
@@ -5,9 +6,15 @@ const Snippet = ({
   ...rest
 }) => {
   return (
-    <div {...rest}>
-      <h1>{data.title}</h1>
-    </div>
+    <Box
+      p={4}
+      shadow='none'
+      borderWidth='1px'
+      {...rest}
+    >
+      <Heading fontSize='lg'>{data.title}</Heading>
+      <Text mt={4}>{data.title}</Text>
+    </Box>
   );
 }
 

@@ -5,13 +5,14 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
+import { Box, Flex } from "@chakra-ui/react";
 
 function App() {
   const [snippets, setSnippets] = useState([]);
 
   const [snippet, setSnippet] = useState({});
   const [unSavedSnippet, setUnSavedSnippet] = useState({});
-
+  const [shouldUpdate, setShouldUpdate] = useState(false);
   const handleChangeSnippetContent = (text) => {
     setUnSavedSnippet({ ...unSavedSnippet, body: text });
   };
@@ -21,17 +22,18 @@ function App() {
       title: 'New Snippet',
       body: '// Type your code here',
     })
-    .then(data => {
-      setSnippets([...snippets, data]);
-      setUnSavedSnippet(data);
-    });
+      .then(data => {
+        setSnippets([...snippets, data]);
+        setUnSavedSnippet(data);
+      });
   };
-  
+
   const handleSetSnippetFocus = (currentSnippet) => {
     setUnSavedSnippet(currentSnippet);
   };
 
-  const syncSnippet = _.debounce(() => {
+  const syncSnippet = _.throttle(() => {
+    setShouldUpdate(true);
     setSnippet(unSavedSnippet)
     console.log("unSavedSnippet")
   }, 1000);
@@ -44,13 +46,15 @@ function App() {
 
   useEffect(() => {
     console.log("bjhbjb")
-    invoke('update_snippet', {
-      id: snippet.id,
-      updatedTitle: snippet.title,
-      updatedBody: snippet.body
-    })
-      // .then(
-      // () => {
+    if (shouldUpdate) {
+      invoke('update_snippet', {
+        id: snippet.id,
+        updatedTitle: snippet.title,
+        updatedBody: snippet.body
+      })
+      .then(
+      () => {
+        setShouldUpdate(false);
       //   setSnippets(
       //     snippets.map(
       //       s => {
@@ -59,35 +63,44 @@ function App() {
       //         }
       //         return s;
       //       })
-      //   )
-      // });
+        // )
+      });
+    }
   }, [snippet])
 
   useEffect(() => {
     syncSnippet();
-    console.log("fsk",unSavedSnippet)
+    console.log("fsk", unSavedSnippet)
   }, [unSavedSnippet])
 
   console.log(snippets)
 
   return (
-    <div className={styles.home}>
-      <div className={styles.snippetsContainer}>
-        <SearchInput 
-          onChange={() => {}}
+    <Flex
+      height={'100vh'}
+      mx="4"
+      my="2"
+      justifyContent={'space-between'}
+    >
+      <Box
+        overflowY={'scroll'}
+      >
+        <SearchInput
+          onChange={() => { }}
           value="dd"
           onButtonAddClick={handleSetupNewSnippet}
+          mb="2"
         />
-        <SnippetList 
+        <SnippetList
           snippets={snippets}
           onSnippetClick={handleSetSnippetFocus}
         />
-      </div>
-      <Editor 
-        onChange={handleChangeSnippetContent} 
+      </Box>
+      <Editor
+        onChange={handleChangeSnippetContent}
         value={unSavedSnippet?.body}
       />
-    </div>
+    </Flex>
   )
 }
 
