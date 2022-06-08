@@ -6,7 +6,7 @@ import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
 import { Box, Flex, Heading } from "@chakra-ui/react";
 
-function App() {
+function Home() {
   const [snippets, setSnippets] = useState([]);
 
   const [snippet, setSnippet] = useState({});
@@ -105,4 +105,4 @@ function App() {
   )
 }
 
-export default App
+export default Home;
