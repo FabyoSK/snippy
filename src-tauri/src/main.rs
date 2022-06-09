@@ -74,15 +74,30 @@ fn get_snippets() -> Result<Vec<Snippet>, String> {
   use crate::schema::snippets::dsl::*;
 
   let results = snippets
+    .filter(is_deleted.eq(false))
     .load::<Snippet>(&conn)
     .expect("Error loading posts");
 
   println!("Displaying {} posts", results.len());
-  // for post in results {
-  //     println!("{}", post.);
-  //     println!("----------\n");
-  // }
+
   Ok(results)
+}
+
+#[tauri::command]
+fn delete_snippet(id: &str) {
+  use crate::schema::snippets::dsl::{is_deleted, snippets};
+
+  let conn = establish_connection();
+
+  let result = diesel::update(snippets.find(id))
+    .set(is_deleted.eq(true))
+    .execute(&conn)
+    .expect("Error while update");
+
+  match result {
+    0 => println!("No snippet found with id {}", id),
+    _ => println!("Snippet deleted successfully"),
+  }
 }
 
 fn main() {
@@ -90,7 +105,8 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       create_snippet,
       get_snippets,
-      update_snippet
+      update_snippet,
+      delete_snippet
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

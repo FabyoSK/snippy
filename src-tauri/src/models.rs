@@ -5,6 +5,7 @@ pub struct Snippet {
     pub id: String,
     pub title: String,
     pub body: String,
+    pub is_deleted: bool
 }
 
 #[derive(Insertable)]
