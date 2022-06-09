@@ -4,15 +4,17 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "../../store";
+import { fetch as fetchSnippets, update as updateSnippet } from "../../slices/snippets";
 
-function App() {
-  const [snippets, setSnippets] = useState([]);
+function Home() {
+  const dispatch = useDispatch();
+  const { data: snippets } = useSelector((state) => state).snippets;
 
   const [snippet, setSnippet] = useState({});
   const [unSavedSnippet, setUnSavedSnippet] = useState({});
   const [shouldUpdate, setShouldUpdate] = useState(false);
-
 
   const handleChangeSnippet = (key, value) => {
     setUnSavedSnippet({ ...unSavedSnippet, [key]: value });
@@ -24,7 +26,6 @@ function App() {
       body: '// Type your code here',
     })
       .then(data => {
-        setSnippets([...snippets, data]);
         setUnSavedSnippet({
           title: 'New Snippet',
           body: '// Type your code here',
@@ -42,30 +43,13 @@ function App() {
   }, 3000);
 
   useEffect(() => {
-    invoke('get_snippets')
-      .then(data => setSnippets(data));
+    dispatch(fetchSnippets())
   }, [])
 
   useEffect(() => {
     if (shouldUpdate) {
-      invoke('update_snippet', {
-        id: snippet.id,
-        updatedTitle: snippet.title,
-        updatedBody: snippet.body
-      })
-        .then(
-          () => {
-            setShouldUpdate(false);
-              setSnippets(
-                snippets.map(
-                  s => {
-                    if (s.id === snippet.id) {
-                      return snippet;
-                    }
-                    return s;
-                  })
-            )
-          });
+      dispatch(updateSnippet(unSavedSnippet));
+      setShouldUpdate(false);
     }
   }, [snippet])
 
@@ -105,4 +89,4 @@ function App() {
   )
 }
 
-export default App
+export default Home;
