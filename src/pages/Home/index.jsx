@@ -6,7 +6,7 @@ import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
 import { Box, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "../../store";
-import { fetch as fetchSnippets, update as updateSnippet } from "../../slices/snippets";
+import { fetch as fetchSnippets, update as updateSnippet, remove as removeSnippet } from "../../slices/snippets";
 
 function Home() {
   const dispatch = useDispatch();
@@ -57,15 +57,21 @@ function Home() {
     syncSnippet();
   }, [unSavedSnippet])
 
+  const handleSnippetDelete = (id) => {
+    dispatch(removeSnippet(id));
+  };
+
   return (
     <Flex
       height={'100vh'}
       mx="4"
       my="2"
-      justifyContent={'space-between'}
+      // justifyContent={'space-between'}
     >
       <Box
         overflowY={'scroll'}
+        mr={14}
+        pr={6}
       >
         <SearchInput
           onChange={() => { }}
@@ -76,6 +82,7 @@ function Home() {
         <SnippetList
           snippets={snippets}
           onSnippetClick={handleSetSnippetFocus}
+          onButtonDeleteClick={handleSnippetDelete}
         />
       </Box>
       <Box>

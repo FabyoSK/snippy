@@ -36,6 +36,12 @@ const slice = createSlice({
     _updateFailure: (state) => {
       state.loading = false;
       state.error = true;
+    },
+    _deleteSuccess: (state, { payload }) => {
+      return {
+        ...state,
+        data: state.data.filter((item) => item.id !== payload)
+      };
     }
   }
 });
@@ -45,7 +51,8 @@ const {
   _getSuccess,
   _getFailure,
   _updateSuccess,
-  _updateFailure
+  _updateFailure,
+  _deleteSuccess
 } = slice.actions;
 
 export default slice.reducer;
@@ -93,6 +100,21 @@ export const update = createAsyncThunk(
         updatedBody: data.body
       })
         .then(() => dispatch(_updateSuccess(data)));
+    } catch (error) {
+      dispatch(_updateFailure());
+    }
+  }
+);
+
+export const remove = createAsyncThunk(
+  'snippets/remove',
+  async (id, { dispatch }) => {
+    dispatch(_get());
+    try {
+      invoke('delete_snippet', {
+        id
+      })
+        .then(() => dispatch(_deleteSuccess(id)));
     } catch (error) {
       dispatch(_updateFailure());
     }
