@@ -6,6 +6,7 @@ import SearchInput from "../../components/SearchInput";
 import _ from "lodash";
 import { Box, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "../../store";
+
 import { fetch as fetchSnippets, update as updateSnippet, remove as removeSnippet } from "../../slices/snippets";
 
 function Home() {
