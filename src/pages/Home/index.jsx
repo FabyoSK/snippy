@@ -66,8 +66,6 @@ function Home() {
     <Flex
       height={'100vh'}
       mx="4"
-      my="2"
-      // justifyContent={'space-between'}
     >
       <Box
         overflowY={'scroll'}
@@ -76,7 +74,7 @@ function Home() {
       >
         <SearchInput
           onChange={() => { }}
-          value="dd"
+          value="Search"
           onButtonAddClick={handleSetupNewSnippet}
           mb="2"
         />
