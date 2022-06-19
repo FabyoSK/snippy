@@ -1,25 +1,26 @@
-import Editor from "../../components/Editor"
 import SnippetList from "../../components/SnippetList"
 import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SearchInput from "../../components/SearchInput";
-import _ from "lodash";
+import { debounce } from "lodash";
 import { Box, Flex } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "../../store";
 
-import { fetch as fetchSnippets, update as updateSnippet, remove as removeSnippet } from "../../slices/snippets";
+import EditorContainer from "../../components/EditorContainer";
+import useSnippetStore from "../../store/useSnippetStore";
 
 function Home() {
-  const dispatch = useDispatch();
-  const { data: snippets } = useSelector((state) => state).snippets;
+  const snippets = useSnippetStore((state) => state.snippets)
+  const fetchSnippets = useSnippetStore(state => state.fetchSnippets)
+  const updateSnippet = useSnippetStore(state => state.updateSnippet)
+  const deleteSnippet = useSnippetStore(state => state.deleteSnippet)
 
   const [snippet, setSnippet] = useState({});
   const [unSavedSnippet, setUnSavedSnippet] = useState({});
   const [shouldUpdate, setShouldUpdate] = useState(false);
 
-  const handleChangeSnippet = (key, value) => {
-    setUnSavedSnippet({ ...unSavedSnippet, [key]: value });
-  };
+  const handleChangeSnippet = useCallback((key, value) => {
+    setUnSavedSnippet((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
   const handleSetupNewSnippet = () => {
     invoke('create_snippet', {
@@ -35,31 +36,32 @@ function Home() {
   };
 
   const handleSetSnippetFocus = (currentSnippet) => {
+    setSnippet(unSavedSnippet)
     setUnSavedSnippet(currentSnippet);
   };
 
-  const syncSnippet = _.throttle(() => {
+  const syncSnippet = useCallback(debounce((newSnippet) => {
     setShouldUpdate(true);
-    setSnippet(unSavedSnippet)
-  }, 3000);
+    setSnippet(newSnippet);
+  }, 1000), []);
 
   useEffect(() => {
-    dispatch(fetchSnippets())
+    fetchSnippets();
   }, [])
 
   useEffect(() => {
     if (shouldUpdate) {
-      dispatch(updateSnippet(unSavedSnippet));
+      updateSnippet(unSavedSnippet);
       setShouldUpdate(false);
     }
   }, [snippet])
 
   useEffect(() => {
-    syncSnippet();
+    syncSnippet(unSavedSnippet);
   }, [unSavedSnippet])
 
   const handleSnippetDelete = (id) => {
-    dispatch(removeSnippet(id));
+    deleteSnippet(id);
   };
 
   return (
@@ -67,7 +69,6 @@ function Home() {
       height={'100vh'}
       mx="4"
       my="2"
-      // justifyContent={'space-between'}
     >
       <Box
         overflowY={'scroll'}
@@ -87,7 +88,7 @@ function Home() {
         />
       </Box>
       <Box>
-        <Editor
+        <EditorContainer
           onChange={handleChangeSnippet}
           title={unSavedSnippet?.title}
           value={unSavedSnippet?.body}

@@ -1,33 +1,20 @@
 import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/ext-language_tools";
-
-import { ResizableBox } from "react-resizable";
-import { Box, Editable, EditableInput, EditablePreview, Heading } from "@chakra-ui/react";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-dracula";
+import 'ace-builds/src-noconflict/keybinding-vscode';
+import "ace-builds/src-noconflict/snippets/javascript";
+import "ace-builds/src-min-noconflict/ext-language_tools";
+import 'ace-builds/src-noconflict/ext-emmet';
 
 // add react resizable
 const Editor = ({
 	onChange,
-	title,
 	value
 }) => {
 	return (
-		<Box
-			height={'100vh'}
-		>
-			<Box
-				mb={2}
-			>
-				<Editable value={title} onChange={e => onChange('title', e)}>
-					<EditablePreview />
-					<EditableInput />
-				</Editable>
-			</Box>
-
 			<AceEditor
 				mode="javascript"
-				theme="monokai"
+				theme="dracula"
 				onChange={e => onChange('body', e)}
 				name="editor"
 				highlightActiveLine={true}
@@ -40,8 +27,6 @@ const Editor = ({
 					tabSize: 2,
 				}}
 			/>
-		</Box>
-
 	);
 };
 

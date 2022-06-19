@@ -1,6 +1,7 @@
-import { CopyIcon, DeleteIcon } from '@chakra-ui/icons';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { Box, Button, ButtonGroup, Flex, Heading, IconButton, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Stack, Text } from '@chakra-ui/react';
-import React from 'react';
+import _ from 'lodash';
+import React, { memo } from 'react';
 
 const Snippet = ({
   data,
@@ -37,4 +38,6 @@ const Snippet = ({
   );
 }
 
-export default Snippet;
+export default memo(Snippet, (prevProps, nextProps) => {
+  return _.isEqual(prevProps.data.title, nextProps.data.title);
+});
